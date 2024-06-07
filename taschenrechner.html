@@ -3,58 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rechner</title>
-  
+    <title>Erweiterter Taschenrechner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .calculator {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .display {
+            width: 100%;
+            height: 50px;
+            background: #222;
+            color: #fff;
+            text-align: right;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            background: #eee;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #ddd;
+        }
+        .span-two {
+            grid-column: span 2;
+        }
+        .operator {
+            background: #ff9500;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Rechner</h1>
-        <label for="num1">Erste Zahl:</label>
-        <input type="number" id="num1" placeholder="Erste Zahl eingeben">
-        <label for="num2">Zweite Zahl:</label>
-        <input type="number" id="num2" placeholder="Zweite Zahl eingeben">
-        <input type="button" value="Addition" onclick="add()">
-        <input type="button" value="Subtraktion" onclick="subtract()">
-        <input type="button" value="Multiplikation" onclick="multiply()">
-        <input type="button" value="Division" onclick="divide()">
-        <input type="button" value="Potenzieren" onclick="power()">
-        <p id="result"></p>
+
+<div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+        <button onclick="clearDisplay()">C</button>
+        <button onclick="deleteLast()">DEL</button>
+        <button onclick="appendOperator('/')">/</button>
+        <button onclick="appendOperator('*')">*</button>
+        <button onclick="appendNumber(7)">7</button>
+        <button onclick="appendNumber(8)">8</button>
+        <button onclick="appendNumber(9)">9</button>
+        <button onclick="appendOperator('-')">-</button>
+        <button onclick="appendNumber(4)">4</button>
+        <button onclick="appendNumber(5)">5</button>
+        <button onclick="appendNumber(6)">6</button>
+        <button onclick="appendOperator('+')">+</button>
+        <button onclick="appendNumber(1)">1</button>
+        <button onclick="appendNumber(2)">2</button>
+        <button onclick="appendNumber(3)">3</button>
+        <button class="span-two" onclick="appendNumber(0)">0</button>
+        <button onclick="appendNumber('.')">.</button>
+        <button class="operator" onclick="calculate()">=</button>
+        <button onclick="appendOperator('^')">^</button>
+        <button onclick="calculateSqrt()">√</button>
+        <button onclick="calculateTrig('sin')">sin</button>
+        <button onclick="calculateTrig('cos')">cos</button>
+        <button onclick="calculateTrig('tan')">tan</button>
     </div>
+</div>
 
-    <script>
-        function add() {
-            let num1 = parseFloat(document.getElementById('num1').value);
-            let num2 = parseFloat(document.getElementById('num2').value);
-            document.getElementById('result').innerText = `Ergebnis: ${num1 + num2}`;
+<script>
+    let display = document.getElementById('display');
+    let currentInput = '';
+    let operator = '';
+    let previousInput = '';
+
+    function clearDisplay() {
+        currentInput = '';
+        operator = '';
+        previousInput = '';
+        display.innerText = '0';
+    }
+
+    function deleteLast() {
+        currentInput = currentInput.slice(0, -1);
+        if (currentInput === '') {
+            display.innerText = '0';
+        } else {
+            display.innerText = currentInput;
+        }
+    }
+
+    function appendNumber(number) {
+        if (currentInput.includes('.') && number === '.') return;
+        currentInput += number;
+        display.innerText = currentInput;
+    }
+
+    function appendOperator(op) {
+        if (currentInput === '') return;
+        if (previousInput !== '') {
+            calculate();
+        }
+        operator = op;
+        previousInput = currentInput;
+        currentInput = '';
+    }
+
+    function calculate() {
+        if (previousInput === '' || currentInput === '') return;
+        let result;
+        let prev = parseFloat(previousInput);
+        let curr = parseFloat(currentInput);
+
+        switch (operator) {
+            case '+':
+                result = prev + curr;
+                break;
+            case '-':
+                result = prev - curr;
+                break;
+            case '*':
+                result = prev * curr;
+                break;
+            case '/':
+                result = prev / curr;
+                break;
+            case '^':
+                result = Math.pow(prev, curr);
+                break;
+            default:
+                return;
         }
 
-        function subtract() {
-            let num1 = parseFloat(document.getElementById('num1').value);
-            let num2 = parseFloat(document.getElementById('num2').value);
-            document.getElementById('result').innerText = `Ergebnis: ${num1 - num2}`;
-        }
+        display.innerText = result;
+        currentInput = result.toString();
+        previousInput = '';
+        operator = '';
+    }
 
-        function multiply() {
-            let num1 = parseFloat(document.getElementById('num1').value);
-            let num2 = parseFloat(document.getElementById('num2').value);
-            document.getElementById('result').innerText = `Ergebnis: ${num1 * num2}`;
-        }
+    function calculateSqrt() {
+        if (currentInput === '') return;
+        let result = Math.sqrt(parseFloat(currentInput));
+        display.innerText = result;
+        currentInput = result.toString();
+    }
 
-        function divide() {
-            let num1 = parseFloat(document.getElementById('num1').value);
-            let num2 = parseFloat(document.getElementById('num2').value);
-            if (num2 !== 0) {
-                document.getElementById('result').innerText = `Ergebnis: ${num1 / num2}`;
-            } else {
-                document.getElementById('result').innerText = "Fehler: Division durch Null!";
-            }
+    function calculateTrig(func) {
+        if (currentInput === '') return;
+        let angle = parseFloat(currentInput);
+        let result;
+        switch (func) {
+            case 'sin':
+                result = Math.sin(angle * (Math.PI / 180));
+                break;
+            case 'cos':
+                result = Math.cos(angle * (Math.PI / 180));
+                break;
+            case 'tan':
+                result = Math.tan(angle * (Math.PI / 180));
+                break;
+            default:
+                return;
         }
+        display.innerText = result;
+        currentInput = result.toString();
+    }
+</script>
 
-        function power() {
-            let num1 = parseFloat(document.getElementById('num1').value);
-            let num2 = parseFloat(document.getElementById('num2').value);
-            document.getElementById('result').innerText = `Ergebnis: ${Math.pow(num1, num2)}`;
-        }
-    </script>
 </body>
 </html>
